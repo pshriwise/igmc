@@ -3,7 +3,7 @@ from warnings import warn
 
 import numpy as np
 
-import openmc.checkvalue as cv
+import checkvalue as cv
 
 
 class EqualityMixin:
