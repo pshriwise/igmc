@@ -1,7 +1,8 @@
 from collections.abc import Iterable
+from numbers import Real
 
-from .mixin import IDManagerMixin
-from openmc.checkvalue as cv
+from mixin import IDManagerMixin
+import checkvalue as cv
 
 class Particle(IDManagerMixin):
 
@@ -21,6 +22,12 @@ class Particle(IDManagerMixin):
             self.u = u
         else:
             self.u = (1.0, 0.0, 0.0)
+
+    def __repr__(self):
+        out = "Particle {}:\n".format(self.id)
+        out += "\t Position: {}\n".format(self.r)
+        out += "\t Direction: {}\n".format(self.u)
+        return out
 
     @property
     def r(self):
