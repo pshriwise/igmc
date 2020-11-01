@@ -1,8 +1,8 @@
 from collections.abc import Iterable
 from numbers import Real
 
-from mixin import IDManagerMixin
-import checkvalue as cv
+from py_iga.mixin import IDManagerMixin
+import py_iga.checkvalue as cv
 
 class Particle(IDManagerMixin):
 
