@@ -1,8 +1,12 @@
 from collections.abc import Iterable
 from numbers import Real
 
+import numpy as np
+from numpy.random import rand
+
 from py_iga.mixin import IDManagerMixin
 import py_iga.checkvalue as cv
+
 
 class Particle(IDManagerMixin):
 
@@ -37,7 +41,7 @@ class Particle(IDManagerMixin):
     def r(self, val):
         cv.check_type('position', val, Iterable, Real)
         cv.check_length('position', val, 3)
-        self._r = val
+        self._r = np.asarray(val)
 
     @property
     def u(self):
@@ -47,4 +51,10 @@ class Particle(IDManagerMixin):
     def u(self, val):
         cv.check_type('direction', val, Iterable, Real)
         cv.check_length('direction', val, 3)
-        self._u = val
+        self._u = np.asarray(val)
+
+    def advance(self, total_xs):
+
+        dist = -np.log(rand()) / total_xs
+
+        self.r = self.r + dist * self.u
