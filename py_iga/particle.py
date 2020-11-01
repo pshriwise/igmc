@@ -13,7 +13,7 @@ class Particle(IDManagerMixin):
     next_id = 1
     used_ids = set()
 
-    def __init__(self, id=None, r=None, u=None):
+    def __init__(self, id=None, r=None, u=None, e=None):
 
         self.id = id
 
@@ -26,6 +26,11 @@ class Particle(IDManagerMixin):
             self.u = u
         else:
             self.u = (1.0, 0.0, 0.0)
+
+        if e:
+            self.e = e
+        else:
+            self.e = 10.0
 
     def __repr__(self):
         out = "Particle {}:\n".format(self.id)
@@ -52,6 +57,15 @@ class Particle(IDManagerMixin):
         cv.check_type('direction', val, Iterable, Real)
         cv.check_length('direction', val, 3)
         self._u = np.asarray(val)
+
+    @property
+    def e(self):
+        return self._e
+
+    @e.setter
+    def e(self, val):
+        cv.check_type('energy', val, Real)
+        self._e = val
 
     def advance(self, total_xs):
 
