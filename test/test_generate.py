@@ -5,7 +5,7 @@ from numpy.testing import assert_array_equal
 from py_iga.particle_gen import Particle, ParticleGenerator
 
 
-def test_parrticle():
+def test_particle():
 
     p = Particle()
 
@@ -30,3 +30,12 @@ def test_generate():
 
     assert_array_equal(p.r, (0.0, 0.0, 0.0))
     assert not np.array_equal(p.u, (1.0, 0.0, 0.0))
+
+
+def test_advance():
+
+    p = Particle()
+
+    p.advance(10.0)
+
+    assert not np.array_equal(p.r, (0.0, 0.0, 0.0))
