@@ -22,6 +22,9 @@ class Particle(IDManagerMixin):
         self.u = u if u else (1.0, 0.0, 0.0)
         self.e = e if e else 10.0
 
+        self.advance_events = 0
+        self.scatter_events = 0
+
     def __repr__(self):
         out = "Particle {}:\n".format(self.id)
         out += "\t Position: {}\n".format(self.r)
@@ -57,12 +60,40 @@ class Particle(IDManagerMixin):
         cv.check_type('energy', val, Real)
         self._e = val
 
-    def advance(self, total_xs):
-
-        dist = -np.log(rand()) / total_xs
-
+    def advance(self, majorant):
+        # sample distance
+        dist = -np.log(rand()) / majorant
+        # advance particle
         self.r = self.r + dist * self.u
+        # increment counter
+        self.advance_events += 1
 
     def scatter(self):
-        self.e *= 0.5
-        self.uvw = isotropic_dir()
+        # decrement energy
+        self.e = self.e * 0.5
+        # sample direction
+        self.u = isotropic_dir()
+        # increment counter
+        self.scatter_events += 1
+
+    @property
+    def n_events(self):
+        return self.scatter_events + self.advance_events
+
+    @property
+    def n_advance_events(self):
+        return self.advance_events
+
+    @property
+    def n_scatter_events(self):
+        return self.scatter_events
+
+    def termination_report(self):
+        msg = "Particle {} terminated:\n".format(self.id)
+        msg += "\tPosition: {}\n".format(self.r)
+        msg += "\tDirection: {}\n".format(self.u)
+        msg += "\tEnergy: {}\n".format(self.e)
+        msg += "\tScattering Events: {}\n".format(self.n_scatter_events)
+        msg += "\tAdvance Events: {}\n".format(self.n_advance_events)
+        msg += "\tTotal Events: {}\n".format(self.n_events)
+        return msg
