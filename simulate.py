@@ -1,8 +1,9 @@
 import numpy as np
 from numpy.random import rand
 
-from py_iga.particle_gen import ParticleGenerator
+import openmc
 
+from py_iga import ParticleGenerator, Geometry
 
 def simulate():
 
@@ -17,13 +18,16 @@ def simulate():
 
     particle_generator = ParticleGenerator()
 
+    geom = Geometry()
+    cell = openmc.Cell()
+    geom.add_cell(cell, 9.9)
+
     for i in range(n_particles):
         p = particle_generator()
-
         while p.e > e_min:
-            p.advance(majorant_xs)
-
-            if rand() < total_xs / majorant_xs:
+            p.advance(geom.majorant)
+            p.locate(geom)
+            if rand() < p.xs / geom.majorant:
                 p.scatter()
 
         print(p)

@@ -27,6 +27,12 @@ class Particle(IDManagerMixin):
         self.scatter_events = 0
         self.distance_traveled = 0.0
 
+        # geometry
+        self._cell = None
+
+        # cross-section
+        self._xs = None
+
     def __repr__(self):
         out = "Particle {} terminated:\n".format(self.id)
         out += "\tPosition: {}\n".format(self.r)
@@ -83,6 +89,23 @@ class Particle(IDManagerMixin):
         self.u = isotropic_dir()
         # increment counter
         self.scatter_events += 1
+
+    def locate(self, geometry):
+        self._cell, self._xs = geometry.locate(self.r, self.u)
+
+    @property
+    def xs(self):
+        if not self._xs:
+            raise RuntimeError("Cross-section called for but not set")
+
+        return self._xs
+
+    @property
+    def cell(self):
+        if not self._cell:
+            raise RuntimeError("Cell called for but not set")
+
+        return self._cell
 
     @property
     def n_events(self):

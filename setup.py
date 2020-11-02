@@ -31,7 +31,7 @@ kwargs = {
     # Dependencies
     'python_requires': '>=3.5',
     'install_requires': [
-        'numpy', 'matplotlib'
+        'openmc>0.11.0', 'numpy', 'matplotlib'
     ],
     'extras_require': {
         'test' : ['pytest', 'pytest-qt'],
