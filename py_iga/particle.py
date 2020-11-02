@@ -4,7 +4,7 @@ from numbers import Real
 import numpy as np
 from numpy.random import rand
 
-from .distributions import isotropic_dir
+from distributions import isotropic_dir
 
 from py_iga.mixin import IDManagerMixin
 import py_iga.checkvalue as cv
@@ -26,9 +26,13 @@ class Particle(IDManagerMixin):
         self.scatter_events = 0
 
     def __repr__(self):
-        out = "Particle {}:\n".format(self.id)
-        out += "\t Position: {}\n".format(self.r)
-        out += "\t Direction: {}\n".format(self.u)
+        out = "Particle {} terminated:\n".format(self.id)
+        out += "\tPosition: {}\n".format(self.r)
+        out += "\tDirection: {}\n".format(self.u)
+        out += "\tEnergy: {}\n".format(self.e)
+        out += "\tScattering Events: {}\n".format(self.n_scatter_events)
+        out += "\tAdvance Events: {}\n".format(self.n_advance_events)
+        out += "\tTotal Events: {}\n".format(self.n_events)
         return out
 
     @property
@@ -70,7 +74,7 @@ class Particle(IDManagerMixin):
 
     def scatter(self):
         # decrement energy
-        self.e = self.e * 0.5
+        self.e = (0.5 + 0.5 * rand()) * self.e
         # sample direction
         self.u = isotropic_dir()
         # increment counter
@@ -87,13 +91,3 @@ class Particle(IDManagerMixin):
     @property
     def n_scatter_events(self):
         return self.scatter_events
-
-    def termination_report(self):
-        msg = "Particle {} terminated:\n".format(self.id)
-        msg += "\tPosition: {}\n".format(self.r)
-        msg += "\tDirection: {}\n".format(self.u)
-        msg += "\tEnergy: {}\n".format(self.e)
-        msg += "\tScattering Events: {}\n".format(self.n_scatter_events)
-        msg += "\tAdvance Events: {}\n".format(self.n_advance_events)
-        msg += "\tTotal Events: {}\n".format(self.n_events)
-        return msg
