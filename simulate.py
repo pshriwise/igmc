@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.random import rand
-from particle_gen import ParticleGenerator
+
+from py_iga.particle_gen import ParticleGenerator
+
 
 def simulate():
 

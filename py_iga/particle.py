@@ -4,10 +4,10 @@ from numbers import Real
 import numpy as np
 from numpy.random import rand
 
-from distributions import isotropic_dir
+from .distributions import isotropic_dir
 
-from py_iga.mixin import IDManagerMixin
-import py_iga.checkvalue as cv
+from .mixin import IDManagerMixin
+from . import checkvalue as cv
 
 
 class Particle(IDManagerMixin):
@@ -78,7 +78,7 @@ class Particle(IDManagerMixin):
 
     def scatter(self):
         # decrement energy
-        self.e = (0.5 + 0.5 * rand()) * self.e
+        self.e *= 0.5
         # sample direction
         self.u = isotropic_dir()
         # increment counter

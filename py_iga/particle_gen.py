@@ -3,9 +3,9 @@ from collections.abc import Callable
 import numpy as np
 from numpy.random import rand
 
-from particle import Particle
-from distributions import isotropic_dir
-import checkvalue as cv
+from .particle import Particle
+from .distributions import isotropic_dir
+from. import checkvalue as cv
 
 
 class ParticleGenerator:
@@ -20,6 +20,9 @@ class ParticleGenerator:
         uvw = self.angle()
         energy = self.energy()
         return Particle(r=xyz, u=uvw, e=energy)
+
+    def __next__(self):
+        return self()
 
     @property
     def space(self):

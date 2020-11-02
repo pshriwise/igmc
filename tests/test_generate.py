@@ -80,7 +80,6 @@ def test_simulate():
     while p.e > 1E-03:
         p.advance(majorant_xs)
         if rand() < (total_xs / majorant_xs):
-            print("Scattering")
             p.scatter()
 
-    print(p.termination_report())
+    print(p)
