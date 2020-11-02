@@ -4,6 +4,8 @@ from numbers import Real
 import numpy as np
 from numpy.random import rand
 
+from .distributions import isotropic_dir
+
 from py_iga.mixin import IDManagerMixin
 import py_iga.checkvalue as cv
 
@@ -16,21 +18,9 @@ class Particle(IDManagerMixin):
     def __init__(self, id=None, r=None, u=None, e=None):
 
         self.id = id
-
-        if r:
-            self.r = r
-        else:
-            self.r = (0.0, 0.0, 0.0)
-
-        if u:
-            self.u = u
-        else:
-            self.u = (1.0, 0.0, 0.0)
-
-        if e:
-            self.e = e
-        else:
-            self.e = 10.0
+        self.r = r if r else (0.0, 0.0, 0.0)
+        self.u = u if u else (1.0, 0.0, 0.0)
+        self.e = e if e else 10.0
 
     def __repr__(self):
         out = "Particle {}:\n".format(self.id)
@@ -72,3 +62,7 @@ class Particle(IDManagerMixin):
         dist = -np.log(rand()) / total_xs
 
         self.r = self.r + dist * self.u
+
+    def scatter(self):
+        self.e *= 0.5
+        self.uvw = isotropic_dir()
