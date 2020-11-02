@@ -22,14 +22,17 @@ class Particle(IDManagerMixin):
         self.u = u if u else (1.0, 0.0, 0.0)
         self.e = e if e else 10.0
 
+        # statistics
         self.advance_events = 0
         self.scatter_events = 0
+        self.distance_traveled = 0.0
 
     def __repr__(self):
         out = "Particle {} terminated:\n".format(self.id)
         out += "\tPosition: {}\n".format(self.r)
         out += "\tDirection: {}\n".format(self.u)
         out += "\tEnergy: {}\n".format(self.e)
+        out += "\tDistance traveled: {}\n".format(self.distance_traveled)
         out += "\tScattering Events: {}\n".format(self.n_scatter_events)
         out += "\tAdvance Events: {}\n".format(self.n_advance_events)
         out += "\tTotal Events: {}\n".format(self.n_events)
@@ -71,6 +74,7 @@ class Particle(IDManagerMixin):
         self.r = self.r + dist * self.u
         # increment counter
         self.advance_events += 1
+        self.distance_traveled += dist
 
     def scatter(self):
         # decrement energy
