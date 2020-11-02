@@ -1,5 +1,6 @@
 
 import numpy as np
+from numpy.random import rand
 from numpy.testing import assert_array_equal
 
 from py_iga.mixin import reset_auto_ids
@@ -66,3 +67,20 @@ def test_scatter():
     p.scatter()
 
     assert p.e == 0.5 * e
+
+
+def test_simulate():
+
+    # create a single particle
+    p = Particle()
+
+    majorant_xs = 8.0
+    total_xs = 2.0
+
+    while p.e > 1E-03:
+        p.advance(majorant_xs)
+        if rand() < (total_xs / majorant_xs):
+            print("Scattering")
+            p.scatter()
+
+    print(p.termination_report())
