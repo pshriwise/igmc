@@ -3,9 +3,10 @@ from collections.abc import Callable
 import numpy as np
 from numpy.random import rand
 
-from .particle import Particle
-from .distributions import isotropic_dir
-from . import checkvalue as cv
+from particle import Particle
+from distributions import isotropic_dir
+import checkvalue as cv
+
 
 class ParticleGenerator:
 
