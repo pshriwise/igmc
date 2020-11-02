@@ -22,7 +22,7 @@ def simulate():
     cell = openmc.Cell()
     geom.add_cell(cell, 9.9)
 
-    for i in range(n_particles):
+    for _ in range(n_particles):
         p = particle_generator()
         while p.e > e_min:
             p.advance(geom.majorant)
