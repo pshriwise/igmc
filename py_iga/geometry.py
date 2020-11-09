@@ -23,15 +23,17 @@ class Geometry:
         if not self.cells:
             raise RuntimeError("No cells in the geometry")
 
-        cell_out = None
-        for cell in self.cells:
-            if r in cell and not cell_out:
-                cell_out = cell
-            else:
-                raise RuntimeError("Geometry Error: point located in more than one cell")
+        cells = [c for c in self.cells if r in c]
 
-        return cell_out, self._xs_map[cell_out]
+        if not cells:
+            return None
 
+        if len(cells) > 1:
+            raise RuntimeError("Geometry Error: point {} located in more than one cell".format(r))
+
+        cell_out = cells[0]
+
+        return cell_out, self._xs_map.get(cell_out, None)
 
     def add_cell(self, cell, total_xs):
         cv.check_type('cell', cell, openmc.Cell)
