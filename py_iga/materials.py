@@ -30,9 +30,17 @@ def setup_energy_grid(nuclides):
 
 def majorants_from_model(model):
     """
+    Calculate the macroscopic majorant from materials on an OpenMC model
+
+    model : openmc.Model instance
+    """
+    return majorants_from_geometry(model.geometry)
+
+def majorants_from_geometry(geom):
+    """
     Calculate the macroscopic majorant for a set of materials
 
-    model : openmc.Model
+    geom : openmc.Geometry instance
     """
 
     # get all the nuclides and their temperatures
@@ -40,15 +48,17 @@ def majorants_from_model(model):
     material_temps = defaultdict(set)
 
     # get all temperatures set on cells
-    for cell in model.geometry.get_all_cells().values():
+    for cell in geom.get_all_cells().values():
         if isinstance(cell.fill, openmc.Material):
             material_temps[cell.fill].add(cell.temperature)
 
+    materials = list(geom.get_all_materials().values())
+
     # and all temperatures set on materials
-    [material_temps[mat].add(mat.temperature) for mat in model.materials]
+    [material_temps[mat].add(mat.temperature) for mat in materials]
 
     nuclides = defaultdict(set)
-    for material in model.materials:
+    for material in materials:
         for name, _, _ in material.nuclides:
             nuclides[name] = material_temps[material]
 
@@ -85,26 +95,25 @@ def majorants_from_model(model):
 
     # calculate the majorant cross section for each material on the common energy grid
     material_majorants = []
-    for material in model.materials:
+    for material in materials:
         material_majorants.append(MaterialMajorant(material, nuclide_majorants))
 
     return common_e_grid, material_majorants
 
-if __name__ == "__main__":
-    pin_cell_model = openmc.examples.pwr_assembly()
-
-    e_grid, material_cross_sections = majorants_from_model(pin_cell_model)
+def plot_majorant(energy_grid, cross_sections):
 
     plt.figure(2)
 
-    for mat_xs in material_cross_sections:
-        xs = mat_xs.xs(e_grid) # compute material cross section on the energy grid
-        zero_mask = xs > 0 # only plot values greater than zero
+    for mat_xs in cross_sections:
+        # compute material cross section on the energy grid
+        xs = mat_xs.xs(e_grid)
+        # only plot values greater than zero
+        zero_mask = xs > 0
         plt.plot(e_grid[zero_mask], xs[zero_mask], label=mat_xs.material.name)
 
-    # majorant = Max2D.from_others(material_cross_sections)
+    # majorant = Max2D.from_others(cross_sections)
     majorant = Max2D()
-    for other in material_cross_sections:
+    for other in cross_sections:
         majorant.update(e_grid, other.xs(e_grid))
     plt.plot(majorant.x_values,
                 majorant.y_values,
@@ -117,3 +126,10 @@ if __name__ == "__main__":
     plt.legend()
     plt.title("Macroscopic Cross Sections")
     plt.show()
+
+if __name__ == "__main__":
+    pin_cell_model = openmc.examples.pwr_assembly()
+
+    e_grid, material_cross_sections = majorants_from_model(pin_cell_model)
+
+    plot_majorant(e_grid, material_cross_sections)
