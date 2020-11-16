@@ -11,7 +11,41 @@ from . import checkvalue as cv
 
 
 class Particle(IDManagerMixin):
+    """
+    Particle class. Used to represent a particle in phase space.
 
+    Parameters
+    ----------
+    id : int
+        Particle ID. Defaults to next value provided by the mixin class.
+    r : iterable of 3 floats
+        Spatial location in Cartesian space. Defaults to the origin.
+    u : iterable of 3 floats
+        Unit vector representing the direction. Defaults to (1.0, 0.0, 0.0)
+    e : float
+
+
+    Attributes
+    ----------
+    id : int
+        Particle ID
+    r : ndarray of 3 floats
+        Position in Cartesian space
+    u : ndarray of 3 floats
+        Directional unit vector
+    e : float
+        Particle energy
+    xs : float
+        Total cross section of the current cell.
+    cell : openmc.Cell
+        Cell containing the particle
+    n_events : int
+        Number of total particle events.
+    n_advance_events : int
+        Number of advance events.
+    n_scatter_events : int
+        Number of scatter events.
+    """
     next_id = 1
     used_ids = set()
 
