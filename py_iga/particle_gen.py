@@ -9,6 +9,28 @@ from. import checkvalue as cv
 
 
 class ParticleGenerator:
+    """
+    Particle generation class. Creates particles based on provided
+    space, angle, and energy distributions.
+
+    Parameters
+    ----------
+    space : Callable (no arguments)
+        Spatial distribution. Defaults to a point source at the origin.
+    angle : Callable (no arguments)
+        Angular distribution. Defaults to an isotropic source.
+    energy : Callable (no arguments)
+        Energy distribution. Defaults to a 10 MeV source.
+
+    Attributes
+    ----------
+    space : Callable (no arguments)
+        Spatial distribution.
+    angle : Callable (no arguments)
+        Angular distribution.
+    energy : Callable (no arguments)
+        Energy distribution.
+    """
 
     def __init__(self, space=None, angle=None, energy=None):
         self.space = space if space else self._default_spatial
