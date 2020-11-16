@@ -5,6 +5,8 @@ from collections import defaultdict
 from matplotlib import pyplot as plt
 import numpy as np
 
+from .binary_search import binary_search
+
 import openmc
 from openmc.plotter import calculate_cexs
 
@@ -420,6 +422,32 @@ class MaterialMajorant(Max2D):
             xs_out += percent * atom_density * self.nuclide_majorants[nuclide].y_values
 
         return xs_out
+
+class Majorant(Max2D):
+    pass
+
+    def calculate_xs(self, e):
+
+        # determine energy values to interpolate between
+        idx = binary_search(self.x_values, e)
+
+        # calculate interpolation factor
+        f = e - self.x_values[idx]
+        f /= self.x_values[idx + 1] - self.x_values[idx]
+
+        xs = f * self.y_values[idx] + (1 - f) * self.y_values[idx + 1]
+
+        return xs
+
+    @classmethod
+    def from_others(cls, energy_grid, other_majorants):
+        # majorant = Majorant.from_others(cross_sections)
+        majorant = cls()
+        for other in other_majorants:
+            majorant.update(energy_grid, other.xs(energy_grid))
+
+        return majorant
+
 
 if __name__ == "__main__":
     e_1 = (1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0)

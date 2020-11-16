@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 import openmc
 from openmc.plotter import calculate_cexs
 
-from majorant import Max2D, MicroMajorant, MaterialMajorant
+from .majorant import Majorant, MicroMajorant, MaterialMajorant
 
 def setup_energy_grid(nuclides):
     """
@@ -74,13 +74,6 @@ def majorants_from_geometry(geom):
         print("Computing majorant for {}...".format(nuclide))
         m = MicroMajorant(nuclide, temperatures)
         nuclide_majorants[nuclide] = m
-        plt.plot(m.x_values, m.y_values, label=nuclide)
-
-    plt.figure(1)
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.title('Microscopic Cross Sections')
-    plt.legend()
 
     # setup the common energy grid
     print("Computing common energy grid...")
@@ -99,37 +92,3 @@ def majorants_from_geometry(geom):
         material_majorants.append(MaterialMajorant(material, nuclide_majorants))
 
     return common_e_grid, material_majorants
-
-def plot_majorant(energy_grid, cross_sections):
-
-    plt.figure(2)
-
-    for mat_xs in cross_sections:
-        # compute material cross section on the energy grid
-        xs = mat_xs.xs(e_grid)
-        # only plot values greater than zero
-        zero_mask = xs > 0
-        plt.plot(e_grid[zero_mask], xs[zero_mask], label=mat_xs.material.name)
-
-    # majorant = Max2D.from_others(cross_sections)
-    majorant = Max2D()
-    for other in cross_sections:
-        majorant.update(e_grid, other.xs(e_grid))
-    plt.plot(majorant.x_values,
-                majorant.y_values,
-                label="Majorant",
-                linestyle='dashed',
-                color='black')
-
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.legend()
-    plt.title("Macroscopic Cross Sections")
-    plt.show()
-
-if __name__ == "__main__":
-    pin_cell_model = openmc.examples.pwr_assembly()
-
-    e_grid, material_cross_sections = majorants_from_model(pin_cell_model)
-
-    plot_majorant(e_grid, material_cross_sections)
