@@ -1,12 +1,13 @@
-import sys
-
 from collections.abc import Iterable
 from collections import defaultdict
-from matplotlib import pyplot as plt
-import numpy as np
+from numbers import Real
+import sys
 
 from .binary_search import binary_search
+from . import checkvalue as cv
 
+from matplotlib import pyplot as plt
+import numpy as np
 import openmc
 from openmc.plotter import calculate_cexs
 
@@ -34,12 +35,12 @@ class data2D:
     """
 
     def __init__(self, x_vals, y_vals):
-            assert(isinstance(x_vals, Iterable))
-            assert(isinstance(y_vals, Iterable))
-            assert(len(x_vals) == len(y_vals))
-            self.x_vals = x_vals
-            self.y_vals = y_vals
-            self.idx = 0
+        cv.check_type('x_vals', x_vals, Iterable, Real)
+        cv.check_type('y_vals', y_vals, Iterable, Real)
+        assert(len(x_vals) == len(y_vals))
+        self.x_vals = x_vals
+        self.y_vals = y_vals
+        self.idx = 0
 
     def __iadd__(self, val):
         """
@@ -116,10 +117,10 @@ class data2D:
             X value to advance the internal index
             to.
         """
-        x = self.get_x(0)
+        x = self.get()[0]
         while(x <= x_val):
             self += 1
-            x = self.get_x()
+            x = self.get()[0]
 
     def prev(self):
         """
@@ -481,12 +482,13 @@ class MaterialMajorant(Max2D):
     """
     def __init__(self, material, nuclide_majorants=None):
         super().__init__()
+        cv.check_type('material', material, openmc.Material)
         self._material = material
         self._nuc_majorants = None
         self._e_grid = None
 
         if nuclide_majorants:
-            assert(isinstance(nuclide_majorants, defaultdict))
+            cv.check_type('nuclide majorants', nuclide_majorants, defaultdict)
             self._nuc_majorants = nuclide_majorants
             self._e_grid = list(nuclide_majorants.values())[0].e_grid
 
@@ -500,7 +502,7 @@ class MaterialMajorant(Max2D):
 
     @nuclide_majorants.setter
     def nuclide_majorants(self, new_majorants):
-        assert(isinstance(nuclide_majorants, defaultdict))
+        cv.check_type('new_majorants', new_majorants, defaultdict)
         self._nuc_majorants = new_majorants
         self._e_grid = list(new_majorants.values())[0].e_grid
 
@@ -531,10 +533,8 @@ class MaterialMajorant(Max2D):
         return xs_out
 
 class Majorant(Max2D):
-    pass
 
     def calculate_xs(self, e):
-
         # determine energy values to interpolate between
         idx = binary_search(self.x_values, e)
 

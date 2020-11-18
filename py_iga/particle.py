@@ -50,7 +50,6 @@ class Particle(IDManagerMixin):
     used_ids = set()
 
     def __init__(self, id=None, r=None, u=None, e=None):
-
         self.id = id
         self.r = r if r else (0.0, 0.0, 0.0)
         self.u = u if u else (1.0, 0.0, 0.0)
