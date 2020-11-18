@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import openmc
 
 from py_iga.majorant import Majorant
-from py_iga.materials import majorants_from_model
+from py_iga.majorant_funcs import majorants_from_model
 
 
 def plot_majorant(energy_grid, cross_sections):

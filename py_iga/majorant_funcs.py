@@ -1,9 +1,7 @@
-
 from collections import defaultdict
 import sys
 
 import numpy as np
-from matplotlib import pyplot as plt
 import openmc
 from openmc.plotter import calculate_cexs
 
