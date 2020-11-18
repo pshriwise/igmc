@@ -13,12 +13,27 @@ from openmc.plotter import calculate_cexs
 class data2D:
     """
     Helper class for tracking iteration over 2D data
+
+    Parameters
+    ----------
+    x_vals : Iterable of float
+        x values of the data
+
+    y_vals : Iterable of float
+        y values of the data
+
+    Attributes
+    ----------
+    x_vals : Iterable of floats
+        Interal storage of the data x values
+    y_vals : Iterable of floats
+        Internal storage of the data y values
+    idx : int
+        Current index into the data. Used to track
+        iteration for external algorithms.
     """
 
     def __init__(self, x_vals, y_vals):
-            """
-
-            """
             assert(isinstance(x_vals, Iterable))
             assert(isinstance(y_vals, Iterable))
             assert(len(x_vals) == len(y_vals))
@@ -36,7 +51,8 @@ class data2D:
 
     def complete(self):
         """
-        Check to see if the index has gone beyond the size of the data
+        Check to see if the index has gone
+        beyond the size of the data.
         """
         return self.idx >= len(self.x_vals)
 
@@ -82,29 +98,47 @@ class data2D:
 
     def pop(self):
         """
-        Return the current x-y tuple pair and advance
+        Return the current x-y tuple pair
+        and advance the internal index.
         """
         out = self.get()
         self += 1
         return out
 
-    def advance(self, energy):
+    def advance(self, x_val):
         """
-        Advance the inner index past a certain x-value
+        Advance the internal index up to the
+        specified x value.
+
+        Parameters
+        ----------
+        x_val : float
+            X value to advance the internal index
+            to.
         """
-        e = self.get()[0]
-        while(e <= energy):
+        x = self.get_x(0)
+        while(x <= x_val):
             self += 1
-            e = self.get()[0]
+            x = self.get_x()
 
     def prev(self):
         """
-        Get the previous value
+        Get the value right behind the current index
         """
         return self.get(self.idx - 1)
 
 class Max2D:
+    """
+    Storage of 2D data that can be updated, creating a new
+    pointwise dataset representing the maximum of both datasets.
 
+    Attributes
+    ----------
+    x_values : Iterable of floats
+        x data
+    y_values : Iterable of floats
+        y data
+    """
     def __init__(self):
         self._x_values = None
         self._y_values = None
@@ -125,6 +159,17 @@ class Max2D:
         return (self._x_values[idx], self._y_values[idx])
 
     def update(self, other_x, other_y):
+        """
+        Update the internal datasets to be the maximum of
+        the internal and provided pointwise datasets.
+
+        Parameters
+        ----------
+        other_x : Iterable of float
+            x values of the other dataset
+        other_y : Iterable of float
+            y values of the other dataset
+        """
         # early exit if there is no current data
         if self._x_values is None:
             self._x_values = other_x
@@ -249,6 +294,11 @@ class Max2D:
         """
         Update the current data using a new set of x-values
         (new grid must be more refined than the previous grid)
+
+        Parameters
+        ----------
+        fine_grid : Iterable of float
+            x values of the new x grid
         """
         assert(len(fine_grid) >= len(self.x_values))
 
@@ -288,7 +338,20 @@ class Max2D:
     @staticmethod
     def is_above(pnt1, pnt2, pnt3):
         """
-        Determines if pnt3 is above or below the line pnt1 -> pnt2
+        Determines if pnt3 is above or below the between pnt1 -> pnt2
+
+        Parameters
+        ----------
+        pnt1 : x,y pair of floats
+            First point of the line segment
+        pnt2 : x,y pair of floats
+            Second point of the line segment
+        pnt3 : x,y pair of floats
+            Point to test
+
+        Returns
+        -------
+        bool : True if pnt3 if above the line, False if not
         """
         m = (pnt2[1] - pnt1[1]) / (pnt2[0] - pnt1[0])
         l = pnt1[1] + m * (pnt3[0] - pnt1[0])
@@ -301,12 +364,22 @@ class Max2D:
         Given 4 points, checks if the line segments (pnt1, pnt2) and
         (pnt3, pnt4) intersect.
 
+        Parameters
+        ----------
+        pnt1 : x,y pair of floats
+            First point of the first line segment
+        pnt2 : x,y pair of floats
+            Second point of the first line segment
+        pnt3 : x,y pair of floats
+            First point of the second line segment
+        pnt4 : x,t pair of floats
+            Second point of the second line segment
+
         Returns
         -------
-            None if no intersection is found. The (x, y) location of the
-            intersection if one is found.
+        None if no intersection is found. The (x, y) location of the
+        intersection if one is found.
         """
-
         denominator = (pnt4[0] - pnt3[0]) * (pnt1[1] - pnt2[1]) - (pnt1[0] - pnt2[0]) * (pnt4[1] - pnt3[1])
         numerator = (pnt3[1] - pnt4[1]) * (pnt1[0] - pnt3[0]) + (pnt4[0] - pnt3[0]) * (pnt1[1] - pnt3[1])
 
@@ -323,6 +396,9 @@ class Max2D:
 
     @classmethod
     def from_others(cls, others):
+        """
+        Create a Max2D dataset from many other datasets
+        """
         assert isinstance(others, Iterable)
         assert all(isinstance(other, Max2D) for other in others)
         out = cls()
@@ -332,18 +408,29 @@ class Max2D:
 
 
 class MicroMajorant(Max2D):
+    """
+    Generates a majorant cross section for a nuclide over a
+    provided set of temperatures.
 
+    Parameters
+    ----------
+    nuclide : str
+        Name of the nuclide in GND format
+    temperatures : Iterable of float
+        List of temperatures over which to compute the majorant
+
+    Attributes
+    ----------
+    nuclide : str
+        Name of the nuclide
+    temperatures : Iterable of float
+        List of temperatures represented in the majorant
+    e_grid : Iterable of float
+        Energy values of the pointwise data
+    xs : Iterable of float
+        Cross section values corresponding to the energy grid
+    """
     def __init__(self, nuclide, temperatures):
-        """
-        Calculate a majorant cross section for a given nuclide
-
-        nuclide : str
-            Name of the nuclide
-        temperatures : Iterable of floats
-            Temperatures to compute the majorant for
-
-        Returns (e_grid, xs) for the majorant cross section
-        """
         super().__init__()
         self._nuclide = nuclide
         self._temperatures = temperatures
@@ -371,7 +458,27 @@ class MicroMajorant(Max2D):
 
 
 class MaterialMajorant(Max2D):
+    """
+    Majorant cross section for a material
 
+    Parameters
+    ----------
+    material : openmc.Material
+        Material definition used to generate the majorant
+    nuclide_majorants : defaultdict
+        Dictionary with nuclide names as keys and MicroMajorant
+        instances as values
+
+    Attributes
+    ----------
+    nuclide_majorants : defaultdict
+        Dictionary with nuclide names as keys and MicroMajorant
+        instances as values
+    e_grid : Iterable of float
+        Energy values of the pointwise data
+    xs : Iterable of float
+        Cross section values corresponding to the energy grid
+    """
     def __init__(self, material, nuclide_majorants=None):
         super().__init__()
         self._material = material

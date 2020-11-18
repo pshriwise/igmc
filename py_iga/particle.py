@@ -108,6 +108,16 @@ class Particle(IDManagerMixin):
         self._e = val
 
     def advance(self, majorant):
+        """
+        Step particle along its directon vector
+
+        Parameters
+        ----------
+
+        majorant : float
+            Majorant cross-section value used to
+            compute the distance to the next collision site.
+        """
         # sample distance
         dist = -np.log(rand()) / majorant
         # advance particle
@@ -125,6 +135,14 @@ class Particle(IDManagerMixin):
         self.scatter_events += 1
 
     def locate(self, geometry):
+        """
+        Determine the particle's containing cell in the geometry
+
+        Parameters
+        ----------
+
+        geometry : openmc.Geometry instance
+        """
         self._cell, self._xs = geometry.locate(self.r, self.u)
 
     @property

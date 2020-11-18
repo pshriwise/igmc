@@ -12,6 +12,22 @@ def find_index(elements, val):
     return first, last
 
 def binary_search(elements, val):
+    """
+    Performs a binary search over a set of elements
+    to find the interval in which a value lies.
+
+    Parameters
+    ----------
+
+    elements : Iterable
+        Set of items to search
+
+    val : Iterable type
+        Query value
+    """
+
+    if val < elements[0] and val > elements[-1]:
+        return None
 
     i, j = find_index(elements, val)
 
