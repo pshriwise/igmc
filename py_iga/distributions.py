@@ -19,4 +19,4 @@ def isotropic_dir():
     v = np.sqrt(1 - t*t) * np.sin(phi)
     w = t
 
-    return np.asarray((u, v, w))
+    return (u, v, w)

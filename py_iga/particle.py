@@ -134,7 +134,7 @@ class Particle(IDManagerMixin):
         # increment counter
         self.scatter_events += 1
 
-    def locate(self, geometry):
+    def locate(self, geometry, xs_dict):
         """
         Determine the particle's containing cell in the geometry
 
@@ -143,7 +143,9 @@ class Particle(IDManagerMixin):
 
         geometry : openmc.Geometry instance
         """
-        self._cell, self._xs = geometry.locate(self.r, self.u)
+        cells = geometry.find(self.r)
+        self._cell = cells[-1]
+        self._xs = xs_dict[self._cell]
 
     @property
     def xs(self):

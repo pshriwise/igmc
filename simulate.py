@@ -18,8 +18,6 @@ def simulate():
 
     particle_generator = ParticleGenerator()
 
-    geom = Geometry()
-
     # simple pincell geometry
     fuel_cyl = openmc.ZCylinder(r=1.5)
     clad_cyl = openmc.ZCylinder(r=1.7)
@@ -28,21 +26,24 @@ def simulate():
     clad_cell = openmc.Cell(region=+fuel_cyl & -clad_cyl)
     water_cell = openmc.Cell(region=+clad_cyl)
 
-    # simple geometry region
-    geom.add_cell(fuel_cell, 15.0)
-    geom.add_cell(clad_cell, 10.0)
-    geom.add_cell(water_cell, 2.0)
+    geom = openmc.Geometry([fuel_cell, clad_cell, water_cell])
+
+    xs_dict = {fuel_cell : 15.0,
+               clad_cell : 10.0,
+               water_cell : 2.0}
+
+    majorant = max(val for val in xs_dict.values())
 
     for _ in range(n_particles):
         p = particle_generator()
         while p.e > e_min:
-            p.advance(geom.majorant)
-            p.locate(geom)
+            p.advance(majorant)
+            p.locate(geom, xs_dict)
 
             if not p.cell:
                 break
 
-            if rand() < p.xs / geom.majorant:
+            if rand() < p.xs / majorant:
                 p.scatter()
 
         print(p)
