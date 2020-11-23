@@ -3,7 +3,7 @@ from numpy.random import rand
 
 import openmc
 
-from py_iga import ParticleGenerator, Geometry
+from py_iga import ParticleGenerator
 
 def simulate():
 
