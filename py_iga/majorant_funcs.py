@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import openmc
 from openmc.plotter import calculate_cexs
+from matplotlib import pyplot as plt
 
 from .majorant import Majorant, MicroMajorant, MaterialMajorant
 
@@ -106,3 +107,29 @@ def majorant_from_geometry(geom):
     """
     e_grid, mat_majorants = majorants_from_geometry(geom)
     return Majorant.from_others(e_grid, mat_majorants)
+
+
+def plot_majorant(energy_grid, cross_sections):
+
+    for mat_xs in cross_sections:
+        # compute material cross section on the energy grid
+        xs = mat_xs.xs(energy_grid)
+        # only plot values greater than zero
+        zero_mask = xs > 0
+        plt.plot(energy_grid[zero_mask],
+                 xs[zero_mask],
+                 label=mat_xs.material.name)
+
+    majorant = Majorant.from_others(energy_grid, cross_sections)
+
+    plt.plot(majorant.x_values,
+                majorant.y_values,
+                label="Majorant",
+                linestyle='dashed',
+                color='black')
+
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.legend()
+    plt.title("Macroscopic Cross Sections")
+    plt.show()
