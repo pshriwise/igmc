@@ -1,3 +1,5 @@
+from argparse import ArgumentParser
+
 import numpy as np
 from numpy.random import rand
 
@@ -5,25 +7,19 @@ import openmc
 from openmc.plotter import calculate_cexs
 
 from py_iga import ParticleGenerator
-from py_iga import majorant_from_geometry, CEXS
+from py_iga import majorants_from_geometry, Majorant, CEXS
+from py_iga import plot_majorant
 
+def simulate(n_particles, seed, e_min=1E-03, plot=False, verbose=False):
 
-def simulate():
-
-    ## Temporary Parameter Storage ##
-    n_particles = 10000
-    e_min = 1E-03
-    majorant_xs = 10
-    total_xs = 9.9
-    seed = 110
-
+    # set random number seed
     np.random.seed(seed)
 
     particle_generator = ParticleGenerator()
 
     # materials
     uo2 = openmc.Material(name='UO2 fuel at 2.4% wt enrichment')
-    uo2.set_density('g/cm3', 10.29769)
+    uo2.set_density('g/cm3', 5.29769)
     uo2.add_element('U', 1., enrichment=2.4)
     uo2.add_element('O', 2.)
 
@@ -57,7 +53,14 @@ def simulate():
         xs_dict[material] = CEXS(e_grid, xs[0])
 
     print("Computing majorant cross-section...")
-    majorant = majorant_from_geometry(geom)
+    e_grid, majorants = majorants_from_geometry(geom)
+
+    if plot:
+        plot_majorant(e_grid, majorants)
+
+    majorant = Majorant.from_others(e_grid, majorants)
+
+    print("Running particles...")
 
     # transport loop
     for _ in range(n_particles):
@@ -78,7 +81,23 @@ def simulate():
             if rand() < p.xs / maj_xs:
                 p.scatter()
 
-        print(p)
+        if verbose:
+            print(p)
 
 if __name__ == "__main__":
-    simulate()
+
+    ap = ArgumentParser(description="Python based Monte Carlo Simulation "
+                        "using delta tracking.")
+    ap.add_argument("--plot", action='store_true',
+                    default=False, help="Plot the majorant cross section")
+    ap.add_argument("--particles", type=int, default=100,
+                    help="Number of particles to run")
+    ap.add_argument("--e-min", type=float, default=1E-03,
+                    help="Minimum energy (ev)")
+    ap.add_argument("--seed", type=int, default=110,
+                    help="Random number seed (int)")
+    ap.add_argument("--verbose", action='store_true',
+                    default=False, help="Verbose output")
+
+    args = ap.parse_args()
+    simulate(args.particles, args.seed, args.plot, args.verbose)
