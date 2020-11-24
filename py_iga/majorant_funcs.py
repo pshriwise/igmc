@@ -90,3 +90,19 @@ def majorants_from_geometry(geom):
         material_majorants.append(MaterialMajorant(material, nuclide_majorants))
 
     return common_e_grid, material_majorants
+
+def majorant_from_geometry(geom):
+    """
+    Compute the majorant for a given geometry
+
+    Parameters
+    ----------
+    geom : openmc.Geometry
+        Geometry for which the majorant is computed
+
+    Returns
+    -------
+        Instance of `Majorant` for the geometry.
+    """
+    e_grid, mat_majorants = majorants_from_geometry(geom)
+    return Majorant.from_others(e_grid, mat_majorants)
