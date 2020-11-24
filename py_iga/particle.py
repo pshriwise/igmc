@@ -133,7 +133,7 @@ class Particle(IDManagerMixin):
         # increment counter
         self.scatter_events += 1
 
-    def locate(self, geometry, xs_dict):
+    def locate(self, geometry):
         """
         Determine the particle's containing cell in the geometry
 
@@ -144,7 +144,13 @@ class Particle(IDManagerMixin):
         """
         cells = geometry.find(self.r)
         self._cell = cells[-1]
-        self._xs = xs_dict[self._cell]
+
+    def calculate_xs(self, xs_dict):
+        """
+        Compute the cross-section for the particle's current
+        cell.
+        """
+        self._xs = xs_dict[self.cell.fill].calculate_xs(self.e)
 
     @property
     def xs(self):
