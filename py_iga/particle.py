@@ -143,7 +143,10 @@ class Particle(IDManagerMixin):
         geometry : openmc.Geometry instance
         """
         cells = geometry.find(self.r)
-        self._cell = cells[-1]
+        if cells:
+            self._cell = cells[-1]
+        else:
+            self._cell = None
 
     def calculate_xs(self, xs_dict):
         """

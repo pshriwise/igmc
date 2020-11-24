@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from atpbar import atpbar
 
 import numpy as np
 from numpy.random import rand
@@ -39,10 +40,11 @@ def simulate(n_particles, seed, e_min=1E-03, plot=False, verbose=False):
     # simple pincell geometry
     fuel_cyl = openmc.ZCylinder(r=1.5)
     clad_cyl = openmc.ZCylinder(r=1.7)
+    boundary = openmc.ZCylinder(r=2.0)
 
     fuel_cell = openmc.Cell(region=-fuel_cyl, fill=uo2)
     clad_cell = openmc.Cell(region=+fuel_cyl & -clad_cyl, fill=zircaloy)
-    water_cell = openmc.Cell(region=+clad_cyl, fill=borated_water)
+    water_cell = openmc.Cell(region=+clad_cyl & -boundary, fill=borated_water)
 
     geom = openmc.Geometry([fuel_cell, clad_cell, water_cell])
 
@@ -63,16 +65,18 @@ def simulate(n_particles, seed, e_min=1E-03, plot=False, verbose=False):
     print("Running particles...")
 
     # transport loop
-    for _ in range(n_particles):
+    for _ in atpbar(range(n_particles)):
         p = particle_generator()
         while p.e > e_min:
             maj_xs = majorant.calculate_xs(p.e)
             p.advance(maj_xs)
             p.locate(geom)
-            p.calculate_xs(xs_dict)
 
             if not p.cell:
+                print('Particle left geometry')
                 break
+
+            p.calculate_xs(xs_dict)
 
             if p.xs > maj_xs:
                 raise RuntimeError("Total XS value {} b is greater than the "
@@ -100,4 +104,4 @@ if __name__ == "__main__":
                     default=False, help="Verbose output")
 
     args = ap.parse_args()
-    simulate(args.particles, args.seed, args.plot, args.verbose)
+    simulate(args.particles, args.seed, args.e_min, args.plot, args.verbose)
