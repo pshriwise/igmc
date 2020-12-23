@@ -25,6 +25,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install OpenMC
+      run: bash ci/install_openmc.sh
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
