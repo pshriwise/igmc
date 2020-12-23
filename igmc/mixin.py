@@ -3,7 +3,7 @@ from warnings import warn
 
 import numpy as np
 
-import py_iga.checkvalue as cv
+import igmc.checkvalue as cv
 
 
 class EqualityMixin:

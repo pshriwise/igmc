@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from py_iga.majorant import Max2D
+from igmc.majorant import Max2D
 
 if __name__ == "__main__":
     e_1 = (1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0)

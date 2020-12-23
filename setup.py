@@ -1,19 +1,19 @@
 from setuptools import setup
 
 kwargs = {
-    'name': 'py-iga',
+    'name': 'igmc',
     'version': '0.0.1',
-    'packages': ['py_iga'],
+    'packages': ['igmc'],
 
     # Metadata
     'author': 'Patrick Shriwise',
     'author_email': 'pshriwise@gmail.com',
     'description': 'Experimentation with isogeometrics for Monte Carlo particle transport',
-    'url': 'https://github.com/pshriwise/py-iga',
-    'download_url': 'https://github.com/pshriwise/py-iga',
+    'url': 'https://github.com/pshriwise/igmc',
+    'download_url': 'https://github.com/pshriwise/igmc',
     'project_urls': {
-        'Issue Tracker': 'https://github.com/pshriwise/py-iga/issues',
-        'Source Code': 'https://github.com/pshriwise/py-iga',
+        'Issue Tracker': 'https://github.com/pshriwise/igmc/issues',
+        'Source Code': 'https://github.com/pshriwise/igmc',
     },
     'classifiers': [
         'Development Status :: 4 - Beta',

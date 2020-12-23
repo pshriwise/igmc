@@ -2,7 +2,7 @@
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 
-from py_iga.majorant import Max2D
+from igmc.majorant import Max2D
 
 
 def test_majorant():

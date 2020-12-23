@@ -3,8 +3,8 @@ import numpy as np
 from numpy.random import rand
 from numpy.testing import assert_array_equal
 
-from py_iga.mixin import reset_auto_ids
-from py_iga.particle_gen import Particle, ParticleGenerator
+from igmc.mixin import reset_auto_ids
+from igmc.particle_gen import Particle, ParticleGenerator
 
 def test_particle():
 

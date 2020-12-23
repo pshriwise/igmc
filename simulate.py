@@ -7,9 +7,9 @@ from numpy.random import rand
 import openmc
 from openmc.plotter import calculate_cexs
 
-from py_iga import ParticleGenerator
-from py_iga import majorants_from_geometry, Majorant, CEXS
-from py_iga import plot_majorant
+from igmc import ParticleGenerator
+from igmc import majorants_from_geometry, Majorant, CEXS
+from igmc import plot_majorant
 
 def simulate(n_particles, seed, e_min=1E-03, plot=False, verbose=False):
 

@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 import openmc
 
-from py_iga import plot_majorant, majorants_from_model
+from igmc import plot_majorant, majorants_from_model
 
 if __name__ == "__main__":
     pin_cell_model = openmc.examples.pwr_assembly()
