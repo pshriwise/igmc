@@ -26,7 +26,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install aptitude dependencies
-      run: apt install libhdf5-serial-dev
+      run: sudo apt install libhdf5-serial-dev
     - name: Install OpenMC
       run: bash ci/install_openmc.sh
     - name: Install dependencies
